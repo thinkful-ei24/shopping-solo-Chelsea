@@ -7,11 +7,9 @@
 // You should be able to check items on the list
 // You should be able to delete items from the list
 
-//item name rendered as inner text
-//item's index in the store set as a data attribute for the <li>
-//item's checked state (true or false) rendered as the presence or absence of a  CSS class for indicating checked items
-//join together the individual item strings into one long string
-//insert the <li>s string inside the .js-shopping-list <ul> into the DOM
+// You should be able to press a switch/checkbox to toggle between displaying all items or displaying only items that are unchecked
+// You should be able to type in a search term and the displayed list will be filtered by item names only containing that search term
+// You should be able to edit the title of an item
 
 // render STORE shopping list
 
@@ -106,28 +104,45 @@ function handleItemCheckClicked() {
 
 //-----------------------------------------------------------------------
 // Delete items on list
-function deleteItemOffShoppingList (item) {
+function deleteItemOffShoppingList(item) {
   STORE.splice(item, 1);
 }
 
 function handleDeleteItemClicked() {
   console.log('`handleDeleteItemClicked` ran');
-  $(".js-shopping-list").on("click", ".js-item-delete", function(event) {
+  $('.js-shopping-list').on('click', '.js-item-delete', function(event) {
     const itemIndex = getItemIndexFromElement(event.currentTarget);
-    
+
     deleteItemOffShoppingList(itemIndex);
     renderShoppingList();
   });
 }
 
 //-----------------------------------------------------------------------
+//Toggle displaying items - checked vs unchecked
 
+function handleToggleCheckUncheckedItems() {}
+
+//-----------------------------------------------------------------------
+//Search displays list with filtered item names containing the search term
+
+function handleSearch() {}
+
+//-----------------------------------------------------------------------
+//Edit title of an item
+
+function handleEditTitle() {}
+
+//-----------------------------------------------------------------------
 // DOM
 function handleShoppingList() {
   renderShoppingList();
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleToggleCheckUncheckedItems();
+  handleSearch();
+  handleEditTitle();
 }
 
 $(handleShoppingList);
