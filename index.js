@@ -7,7 +7,13 @@
 // You should be able to check items on the list
 // You should be able to delete items from the list
 
-// render shopping list
+//item name rendered as inner text
+//item's index in the store set as a data attribute for the <li>
+//item's checked state (true or false) rendered as the presence or absence of a  CSS class for indicating checked items
+//join together the individual item strings into one long string
+//insert the <li>s string inside the .js-shopping-list <ul> into the DOM
+
+// render STORE shopping list
 
 const STORE = [
   { name: 'apples', checked: false },
@@ -15,6 +21,9 @@ const STORE = [
   { name: 'milk', checked: true },
   { name: 'bread', checked: false }
 ];
+
+//------------------------------------------------------------------------
+// Creating HTML, Looping through shopping list, render new shopping list HTML
 
 function generateItemElement(item, itemIndex, template) {
   return `
@@ -45,27 +54,64 @@ function renderShoppingList() {
   //for each item in STORE, generate a string representing an <li> with:
   const shoppingListItemsString = generateShoppingItemsString(STORE);
   $('.js-shopping-list').html(shoppingListItemsString);
-  //item name rendered as inner text
-  //item's index in the store set as a data attribute for the <li>
-  //item's checked state (true or false) rendered as the presence or absence of a  CSS class for indicating checked items
-  //join together the individual item strings into one long string
-  //insert the <li>s string inside the .js-shopping-list <ul> into the DOM
 }
 
-// add items to list
+//--------------------------------------------------------------------
+// Add items to list
+
+function addItemToShoppingList(itemName) {
+  console.log(`Adding "${itemName}" to shopping list`);
+  STORE.push({ name: itemName, checked: false });
+}
+
 function handleNewItemSubmit() {
   console.log('`handleNewItemSubmit` ran');
+
+  $('#js-shopping-list-form').submit(function(event) {
+    event.preventDefault();
+
+    const newItemName = $('.js-shopping-list-entry').val();
+    $('.js-shopping-list-entry').val('');
+
+    addItemToShoppingList(newItemName);
+    renderShoppingList();
+  });
+}
+
+//-----------------------------------------------------------------------
+// Checked on/off items
+
+function toggleCheckedForListItem(itemIndex) {
+  console.log('Toggling checked property for item at index ' + itemIndex);
+  STORE[itemIndex].checked = !STORE[itemIndex].checked;
+}
+
+function getItemIndexFromElement(item) {
+  const itemIndexString = $(item)
+    .closest('.js-item-index-element')
+    .attr('data-item-index');
+  return parseInt(itemIndexString, 10);
 }
 
 // check items on list
 function handleItemCheckClicked() {
-  console.log('`handleItemCheckClicked` ran');
+  $('.js-shopping-list').on('click', `.js-item-toggle`, event => {
+    console.log('`handleItemCheckClicked` ran');
+    const itemIndex = getItemIndexFromElement(event.currentTarget);
+
+    toggleCheckedForListItem(itemIndex);
+    renderShoppingList();
+  });
 }
 
-// delete items on list
+//-----------------------------------------------------------------------
+// Delete items on list
+
 function handleDeleteItemClicked() {
   console.log('`handleDeleteItemClicked` ran');
 }
+
+//-----------------------------------------------------------------------
 
 // DOM
 function handleShoppingList() {
