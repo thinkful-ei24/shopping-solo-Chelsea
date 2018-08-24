@@ -106,9 +106,18 @@ function handleItemCheckClicked() {
 
 //-----------------------------------------------------------------------
 // Delete items on list
+function deleteItemOffShoppingList (item) {
+  STORE.splice(item, 1);
+}
 
 function handleDeleteItemClicked() {
   console.log('`handleDeleteItemClicked` ran');
+  $(".js-shopping-list").on("click", ".js-item-delete", function(event) {
+    const itemIndex = getItemIndexFromElement(event.currentTarget);
+    
+    deleteItemOffShoppingList(itemIndex);
+    renderShoppingList();
+  });
 }
 
 //-----------------------------------------------------------------------
