@@ -26,9 +26,11 @@ const STORE = {
 //------------------------------------------------------------------------
 // Creating HTML, Looping through shopping list, render new shopping list HTML
 
-function generateItemElement(item, itemIndex, template) {
+function generateItemElement(item, itemIndex, display) {
   return `
-      <li class="js-item-index-element" data-item-index="${itemIndex}">
+      <li class="js-item-index-element ${
+        item.hidden ? 'hidden' : ''
+      }" data-item-index="${itemIndex}">
         <span class="shopping-item js-shopping-item ${
           item.checked ? 'shopping-item__checked' : ''
         }">${item.name}</span>
@@ -136,14 +138,25 @@ function toggleDisplayedItems() {
 
 function removeCheckedItems() {
   if (STORE.filterCheck === true) {
-    return $(STORE.items).addClass('hidden');
+    STORE.items.map(item => {
+      if (item.checked === true) {
+        item.hidden = true;
+      }
+    });
+  } else if (STORE.filterCheck === false) {
+    STORE.items.map(item => (item.hidden = false));
   }
+
+  //   console.log(STORE.items[0]);
+  //   if (STORE.items.checked === true) {
+  //     STORE.items.hidden = true;
+  //   }
 }
 
 function handleAllItemsOrUnchecked() {
   console.log('`handleAllItemsOrUnchecked` ran');
 
-  $('.js-filter-checkbox').click(event => {
+  $('.js-filter-checkbox').change(event => {
     const currentChecked = event.target.checked;
     // const currentState = event.currentTarget.checked;
 
