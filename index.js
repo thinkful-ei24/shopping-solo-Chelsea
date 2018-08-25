@@ -103,6 +103,7 @@ function handleItemCheckClicked() {
     const itemIndex = getItemIndexFromElement(event.currentTarget);
 
     toggleCheckedForListItem(itemIndex);
+    hideCheckedItems(); // this runs the function
     renderShoppingList();
   });
 }
@@ -131,26 +132,19 @@ function handleDeleteItemClicked() {
 //if switch is true loop through my STORE and save new STORE with unchecked items
 // render shopping list
 
-function toggleDisplayedItems() {
+function toggleFilterCheck() {
   STORE.filterCheck = !STORE.filterCheck;
-  console.log(STORE.filterCheck);
 }
 
-function removeCheckedItems() {
-  if (STORE.filterCheck === true) {
-    STORE.items.map(item => {
-      if (item.checked === true) {
-        item.hidden = true;
-      }
-    });
-  } else if (STORE.filterCheck === false) {
-    STORE.items.map(item => (item.hidden = false));
-  }
+function hideCheckedItems() {
+  // set each STORE item
+  STORE.items.map(item => (item.hidden = false));
 
-  //   console.log(STORE.items[0]);
-  //   if (STORE.items.checked === true) {
-  //     STORE.items.hidden = true;
-  //   }
+  if (STORE.filterCheck) {
+    STORE.items.map(
+      item => (item.checked ? (item.hidden = true) : (item.hidden = false))
+    );
+  }
 }
 
 function handleAllItemsOrUnchecked() {
@@ -160,11 +154,15 @@ function handleAllItemsOrUnchecked() {
     const currentChecked = event.target.checked;
     // const currentState = event.currentTarget.checked;
 
-    toggleDisplayedItems();
-    removeCheckedItems();
+    toggleFilterCheck();
+    hideCheckedItems();
     renderShoppingList();
   });
 }
+
+// NOTE: I realize that hiding the <li> by adding a class isn't the best way to handle
+//this problem - it would be better to remove and store the data so the browser
+//doesn't have to populate each hidden line. If I have more time I'll come back to this one.
 
 //-----------------------------------------------------------------------
 //Search displays list with filtered item names containing the search term
