@@ -153,6 +153,9 @@ function handleAllItemsOrUnchecked() {
   $('.js-filter-checkbox').change(event => {
     const currentChecked = event.target.checked;
     // const currentState = event.currentTarget.checked;
+    if ($('.js-search-entry').val()) {
+      clearSearch();
+    }
 
     toggleFilterCheck();
     hideCheckedItems();
@@ -165,14 +168,58 @@ function handleAllItemsOrUnchecked() {
 //doesn't have to populate each hidden line. If I have more time I'll come back to this one.
 
 //-----------------------------------------------------------------------
-//Search displays list with filtered item names containing the search term
+//the Search displays list with filtered item names containing the search term
+
+// grab the value of the input field
+//compare the value to the STORE names
+// push new STORE with only matching values
+// render shopping list
+function compareSearchResult(query) {
+  STORE.items.filter(item => {
+    if (item.name !== query) {
+      return (item.hidden = true);
+    }
+  });
+}
+
+//TODO: finish clearSearch functionality - should remove .hidden class and display all items again
+
+// function clearSearch() {
+//   //Clear search
+//   $('#js-search-list').on('click', '.js-delete-search', event => {
+//     $('.js-search-entry').val(null);
+//     console.log($('.js-search-entry'));
+
+//     STORE.items.map(item => {
+//       item.hidden = false;
+//       console.log(item);
+//     });
+//     renderShoppingList();
+//   });
+// }
 
 function handleSearch() {
   console.log('`handleSearch` ran');
+
+  $('#js-search-list').submit(event => {
+    event.preventDefault();
+
+    //find the input field value on submit
+    const search = $(event.currentTarget)
+      .find('.js-search-entry')
+      .val();
+
+    //run my compare function using the search variable above
+    compareSearchResult(search);
+    renderShoppingList();
+    // clearSearch();
+  });
 }
 
 //-----------------------------------------------------------------------
 //Edit title of an item
+
+//TODO: write function
 
 function handleEditTitle() {
   console.log('`handleEditTitle` ran');
