@@ -15,10 +15,10 @@
 
 const STORE = {
   items: [
-    { name: 'apples', checked: false, hidden: false },
-    { name: 'oranges', checked: false, hidden: false },
-    { name: 'milk', checked: true, hidden: false },
-    { name: 'bread', checked: false, hidden: false }
+    { name: 'apples', checked: false },
+    { name: 'oranges', checked: false },
+    { name: 'milk', checked: true },
+    { name: 'bread', checked: false }
   ],
   filterCheck: false
 };
@@ -28,9 +28,7 @@ const STORE = {
 
 function generateItemElement(item, itemIndex, display) {
   return `
-      <li class="js-item-index-element ${
-        item.hidden ? 'hidden' : ''
-      }" data-item-index="${itemIndex}">
+      <li class="js-item-index-element" data-item-index="${itemIndex}">
         <span class="shopping-item js-shopping-item ${
           item.checked ? 'shopping-item__checked' : ''
         }">${item.name}</span>
@@ -52,10 +50,10 @@ function generateShoppingItemsString(shoppingList) {
   return items.join('');
 }
 
-function renderShoppingList() {
+function renderShoppingList(arr) {
   //renders or shows the shopping list in the DOM
   //for each item in STORE, generate a string representing an <li> with:
-  const shoppingListItemsString = generateShoppingItemsString(STORE.items);
+  const shoppingListItemsString = generateShoppingItemsString(arr);
   $('.js-shopping-list').html(shoppingListItemsString);
 }
 
@@ -77,7 +75,7 @@ function handleNewItemSubmit() {
     $('.js-shopping-list-entry').val('');
 
     addItemToShoppingList(newItemName);
-    renderShoppingList();
+    renderShoppingList(STORE.items);
   });
 }
 
@@ -98,13 +96,13 @@ function getItemIndexFromElement(item) {
 
 // check items on list
 function handleItemCheckClicked() {
-  $('.js-shopping-list').on('click', `.js-item-toggle`, event => {
+  $('.js-shopping-list').on('click', '.js-item-toggle', event => {
     console.log('`handleItemCheckClicked` ran');
     const itemIndex = getItemIndexFromElement(event.currentTarget);
 
     toggleCheckedForListItem(itemIndex);
     hideCheckedItems(); // this runs the function
-    renderShoppingList();
+    renderShoppingList(STORE.items);
   });
 }
 
@@ -120,30 +118,28 @@ function handleDeleteItemClicked() {
     const itemIndex = getItemIndexFromElement(event.currentTarget);
 
     deleteItemOffShoppingList(itemIndex);
-    renderShoppingList();
+    renderShoppingList(STORE.items);
   });
 }
 
 //-----------------------------------------------------------------------
 //Toggle displaying items - all items or unchecked
 
-// listen to event selection for 'all items' false or 'unchecked' true
-//if switch is false then just return
-//if switch is true loop through my STORE and save new STORE with unchecked items
-// render shopping list
+//
 
 function toggleFilterCheck() {
   STORE.filterCheck = !STORE.filterCheck;
 }
 
 function hideCheckedItems() {
-  // set each STORE item
-  STORE.items.map(item => (item.hidden = false));
-
   if (STORE.filterCheck) {
-    STORE.items.map(
-      item => (item.checked ? (item.hidden = true) : (item.hidden = false))
-    );
+    //display only unchecked items
+    const currentSTORE = STORE.items.filter(item => {
+      return item.checked === false;
+    });
+    renderShoppingList(currentSTORE);
+  } else {
+    renderShoppingList(STORE.items);
   }
 }
 
@@ -151,15 +147,13 @@ function handleAllItemsOrUnchecked() {
   console.log('`handleAllItemsOrUnchecked` ran');
 
   $('.js-filter-checkbox').change(event => {
-    const currentChecked = event.target.checked;
-    // const currentState = event.currentTarget.checked;
     if ($('.js-search-entry').val()) {
       clearSearch();
     }
 
     toggleFilterCheck();
     hideCheckedItems();
-    renderShoppingList();
+    //renderShoppingList(STORE.items);
   });
 }
 
@@ -205,13 +199,13 @@ function handleSearch() {
     event.preventDefault();
 
     //find the input field value on submit
-    const search = $(event.currentTarget)
+    const query = $(event.currentTarget)
       .find('.js-search-entry')
       .val();
 
     //run my compare function using the search variable above
-    compareSearchResult(search);
-    renderShoppingList();
+    compareSearchResult(query);
+    renderShoppingList(STORE.items);
     // clearSearch();
   });
 }
@@ -228,7 +222,7 @@ function handleEditTitle() {
 //-----------------------------------------------------------------------
 // DOM
 function handleShoppingList() {
-  renderShoppingList();
+  renderShoppingList(STORE.items);
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
