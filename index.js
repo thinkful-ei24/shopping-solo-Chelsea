@@ -52,9 +52,16 @@ function generateShoppingItemsString(shoppingList) {
 
 function renderShoppingList(arr) {
   //renders or shows the shopping list in the DOM
-  //for each item in STORE, generate a string representing an <li> with:
-  const shoppingListItemsString = generateShoppingItemsString(arr);
-  $('.js-shopping-list').html(shoppingListItemsString);
+
+  if (arr) {
+    //for each item in STORE, generate a string representing an <li> with:
+    const shoppingListItemsString = generateShoppingItemsString(arr);
+    $('.js-shopping-list').html(shoppingListItemsString);
+  } else {
+    //for each item in STORE, generate a string representing an <li> with:
+    const shoppingListItemsString = generateShoppingItemsString(STORE.items);
+    $('.js-shopping-list').html(shoppingListItemsString);
+  }
 }
 
 //--------------------------------------------------------------------
@@ -75,7 +82,7 @@ function handleNewItemSubmit() {
     $('.js-shopping-list-entry').val('');
 
     addItemToShoppingList(newItemName);
-    renderShoppingList(STORE.items);
+    renderShoppingList();
   });
 }
 
@@ -102,7 +109,7 @@ function handleItemCheckClicked() {
 
     toggleCheckedForListItem(itemIndex);
     hideCheckedItems(); // this runs the function
-    renderShoppingList(STORE.items);
+    renderShoppingList();
   });
 }
 
@@ -118,14 +125,18 @@ function handleDeleteItemClicked() {
     const itemIndex = getItemIndexFromElement(event.currentTarget);
 
     deleteItemOffShoppingList(itemIndex);
-    renderShoppingList(STORE.items);
+    renderShoppingList();
   });
 }
 
 //-----------------------------------------------------------------------
 //Toggle displaying items - all items or unchecked
 
-//
+//FIXME: By not finding a way to update STORE and go back to old STORE items
+//I end up having to pass the current STORE state into renderShoppingList().
+//This is causing me problems because there are cases where I want the Search
+//and the switch toggle to work together. Ideally I should find out how to update
+// the STORE to show only filtered items and then maintain the full STORE items
 
 function toggleFilterCheck() {
   STORE.filterCheck = !STORE.filterCheck;
@@ -139,7 +150,7 @@ function hideCheckedItems() {
     });
     renderShoppingList(currentSTORE);
   } else {
-    renderShoppingList(STORE.items);
+    renderShoppingList();
   }
 }
 
@@ -153,13 +164,8 @@ function handleAllItemsOrUnchecked() {
 
     toggleFilterCheck();
     hideCheckedItems();
-    //renderShoppingList(STORE.items);
   });
 }
-
-// NOTE: I realize that hiding the <li> by adding a class isn't the best way to handle
-//this problem - it would be better to remove and store the data so the browser
-//doesn't have to populate each hidden line. If I have more time I'll come back to this one.
 
 //-----------------------------------------------------------------------
 //the Search displays list with filtered item names containing the search term
@@ -169,28 +175,25 @@ function handleAllItemsOrUnchecked() {
 // push new STORE with only matching values
 // render shopping list
 function compareSearchResult(query) {
-  STORE.items.filter(item => {
-    if (item.name !== query) {
-      return (item.hidden = true);
-    }
-  });
+  if ($('.js-search-entry').val()) {
+    const searchSTORE = STORE.items.filter(item => {
+      return item.name === query;
+    });
+    renderShoppingList(searchSTORE);
+  } else {
+    renderShoppingList();
+  }
 }
 
-//TODO: finish clearSearch functionality - should remove .hidden class and display all items again
+// Clear search using the delete button
 
-// function clearSearch() {
-//   //Clear search
-//   $('#js-search-list').on('click', '.js-delete-search', event => {
-//     $('.js-search-entry').val(null);
-//     console.log($('.js-search-entry'));
-
-//     STORE.items.map(item => {
-//       item.hidden = false;
-//       console.log(item);
-//     });
-//     renderShoppingList();
-//   });
-// }
+function clearSearch() {
+  //Clear search
+  $('#js-search-list').on('click', '.js-delete-search', event => {
+    $('.js-search-entry').val(null);
+    renderShoppingList();
+  });
+}
 
 function handleSearch() {
   console.log('`handleSearch` ran');
@@ -205,8 +208,7 @@ function handleSearch() {
 
     //run my compare function using the search variable above
     compareSearchResult(query);
-    renderShoppingList(STORE.items);
-    // clearSearch();
+    clearSearch();
   });
 }
 
@@ -222,7 +224,7 @@ function handleEditTitle() {
 //-----------------------------------------------------------------------
 // DOM
 function handleShoppingList() {
-  renderShoppingList(STORE.items);
+  renderShoppingList();
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
